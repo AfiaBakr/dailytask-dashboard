@@ -23,28 +23,28 @@ import AdminSetting from '../Pages/AdminSetting';
 import DashboardLayout from '../components/DashboardLayout';
 
 // Renders the correct overview based on logged-in role
-// const OverViewRouter = () => {
-//   const { user, loader } = useAuthContext();
-//   if (loader) return null;
-//   return user?.role === 'admin' ? <AdminOverView /> : <UserOverView />;
-// };
 const OverViewRouter = () => {
   const { user, loader } = useAuthContext();
-
-  if (loader) {
-    return <h1>Loading...</h1>;
-  }
-
-  if (!user) {
-    return <h1>No User Found</h1>;
-  }
-
-  if (user.role === "admin") {
-    return <AdminOverView />;
-  }
-
-  return <UserOverView />;
+  if (loader) return null;
+  return user?.role === 'admin' ? <AdminOverView /> : <UserOverView />;
 };
+// const OverViewRouter = () => {
+//   const { user, loader } = useAuthContext();
+
+//   if (loader) {
+//     return <h1>Loading...</h1>;
+//   }
+
+//   if (!user) {
+//     return <h1>No User Found</h1>;
+//   }
+
+//   if (user.role === "admin") {
+//     return <AdminOverView />;
+//   }
+
+//   return <UserOverView />;
+// };
 
 const AppRouter = () => {
   return (
