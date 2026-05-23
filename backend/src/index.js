@@ -13,7 +13,10 @@ const app = express();
 connectDb();
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: [
+    "http://localhost:5173",
+    "https://dailytask-dashboard.vercel.app"
+  ],
   credentials: true
 }));
 app.use(express.json());
