@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import api from '../config/service';
 import { useAuthContext } from '../context/AuthContext';
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { userLoad } = useAuthContext();
   const [formData, setFormData] = useState({ email: '', password: '', role: 'user' });
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(location.state?.message || '');
   const [loading, setLoading] = useState(false);
   const [showPass, setShowPass] = useState(false);
 
@@ -22,15 +24,11 @@ const Login = () => {
     try {
       const response = await api.post('/api/v1/auth/login', formData);
       if (response.data.status) {
-        // await userLoad();
-        // navigate('/dashboard');
-        // After userLoad(), check the role:
-        const userData = await userLoad();
-          if (userData?.role === 'admin') {
-            navigate('/admin/dashboard');
-          } else {
-          navigate('/dashboard');
+        if (response.data.token) {
+          localStorage.setItem('token', response.data.token);
         }
+        await userLoad();
+        navigate('/dashboard');
       } else {
         setError(response.data.message || 'Login failed. Please check your credentials.');
       }
@@ -86,6 +84,16 @@ const Login = () => {
             <h1 className="text-3xl font-black text-white mb-2">Welcome back</h1>
             <p className="text-slate-400 text-sm">Sign in to access your dashboard</p>
           </div>
+
+          {/* Success Notification */}
+          {successMessage && (
+            <div className="mb-5 flex items-start gap-3 px-4 py-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 text-sm">
+              <svg className="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              {successMessage}
+            </div>
+          )}
 
           {/* Error */}
           {error && (

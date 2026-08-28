@@ -12,17 +12,25 @@ const app = express();
 
 connectDb();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://dailytask-dashboard.vercel.app"
-  ],
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || /\.vercel\.app$/.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true);
+    }
+  },
   credentials: true
 }));
+
 app.use(express.json());
 app.use(cookieParser());
-
-
 
 app.get("/", (req, res) => {
   res.json({ message: "Server running successfully" });
@@ -32,9 +40,14 @@ app.get("/", (req, res) => {
 app.use('/api/v1/auth', authroute);
 app.use('/api/v1/blog', blogroute);
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
-});
+const PORT = process.env.PORT || 3000;
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
+
+export default app;
 
 
 

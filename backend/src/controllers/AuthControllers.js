@@ -3,9 +3,8 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const addUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
   try {
-    // Bug fix: was using && (all must be missing), should be || (any missing)
     if (!email || !password || !name) {
       return res.status(400).json({
         status: false,
@@ -13,12 +12,18 @@ const addUser = async (req, res) => {
       });
     }
 
+    const existingUser = await Users.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        status: false,
+        message: "User with this email already exists",
+      });
+    }
+
     const hashPass = await bcrypt.hash(password, 10);
-    const user = new Users({ name, email, password: hashPass, role: req.body.role });
+    const user = new Users({ name, email, password: hashPass, role: role || 'user' });
     const data = await user.save();
 
-    // Bug fix: jwt.sign with callback was mixed with async flow incorrectly
-    // Using synchronous sign with expiresIn option instead
     const token = jwt.sign(
       { id: data._id, email: data.email, role: data.role },
       process.env.JWT_SECRET,

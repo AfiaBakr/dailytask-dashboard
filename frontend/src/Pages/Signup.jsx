@@ -28,15 +28,8 @@ const Signup = () => {
     try {
       const response = await api.post('/api/v1/auth/user', formData);
       if (response.data.status) {
-        // await userLoad();
-        // navigate('/dashboard');
-        // After userLoad(), check the role:
-        const userData = await userLoad();
-          if (userData?.role === 'admin') {
-            navigate('/admin/dashboard');
-          } else {
-          navigate('/dashboard');
-          }
+        // Redirect to Login page so user signs in first
+        navigate('/login', { state: { message: 'Account created successfully! Please sign in with your credentials.' } });
       } else {
         setError(response.data.message || 'Signup failed. Please try again.');
       }

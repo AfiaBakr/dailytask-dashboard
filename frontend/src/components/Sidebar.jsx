@@ -28,11 +28,13 @@ export default function Sidebar() {
   const handleLogout = async () => {
     try {
       await api.get('/api/v1/auth/logout');
-      setUser(null);
-      localStorage.removeItem('user');
-      navigate('/login');
     } catch (err) {
       console.log('Logout error:', err);
+    } finally {
+      setUser(null);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      navigate('/login');
     }
   };
 
