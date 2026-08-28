@@ -22,8 +22,15 @@ const Login = () => {
     try {
       const response = await api.post('/api/v1/auth/login', formData);
       if (response.data.status) {
-        await userLoad();
-        navigate('/dashboard');
+        // await userLoad();
+        // navigate('/dashboard');
+        // After userLoad(), check the role:
+        const userData = await userLoad();
+          if (userData?.role === 'admin') {
+            navigate('/admin/dashboard');
+          } else {
+          navigate('/dashboard');
+        }
       } else {
         setError(response.data.message || 'Login failed. Please check your credentials.');
       }
